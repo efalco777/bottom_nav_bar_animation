@@ -4,6 +4,18 @@ const double dialogOpenedThreshold = 10;
 const double buttonSize = 56;
 const double bottomPadding = 14;
 
+class FloatingDialogButton extends StatefulWidget {
+  final List<FloatingDialogItem> dialogItems;
+
+  const FloatingDialogButton({
+    super.key,
+    required this.dialogItems,
+  });
+
+  @override
+  State<FloatingDialogButton> createState() => _FloatingDialogButtonState();
+}
+
 class _FloatingDialogButtonState extends State<FloatingDialogButton> with SingleTickerProviderStateMixin {
   static const double itemHeight = 42;
   static const int minItems = 3;
@@ -47,7 +59,7 @@ class _FloatingDialogButtonState extends State<FloatingDialogButton> with Single
         if (_animationController.value != 0 || isDialogOpened) ...[
           Positioned.fill(
             child: CustomPaint(
-              painter: Painter(
+              painter: _BezierPainter(
                 isDialogOpened: isDialogOpened,
                 offset: _animationController.value,
                 color: Theme.of(context).primaryColor,
@@ -164,14 +176,14 @@ class _FloatingDialogButtonState extends State<FloatingDialogButton> with Single
   }
 }
 
-class Painter extends CustomPainter {
+class _BezierPainter extends CustomPainter {
   static const double _bendSize = 12;
 
   final Color color;
   final bool isDialogOpened;
   final double offset;
 
-  const Painter({
+  const _BezierPainter({
     required this.color,
     required this.offset,
     required this.isDialogOpened,
@@ -230,8 +242,8 @@ class Painter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(covariant _BezierPainter oldDelegate) {
+    return color != oldDelegate.color || offset != oldDelegate.offset || isDialogOpened != oldDelegate.isDialogOpened;
   }
 
   double _getOpacity(Size size) {
@@ -248,16 +260,4 @@ class FloatingDialogItem {
     required this.label,
     required this.onTap,
   });
-}
-
-class FloatingDialogButton extends StatefulWidget {
-  final List<FloatingDialogItem> dialogItems;
-
-  const FloatingDialogButton({
-    super.key,
-    required this.dialogItems,
-  });
-
-  @override
-  State<FloatingDialogButton> createState() => _FloatingDialogButtonState();
 }
